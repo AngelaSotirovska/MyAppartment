@@ -14,11 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.myappartment.auth.screens.EditProfileScreen
-import com.example.myappartment.auth.screens.LoginScreen
-import com.example.myappartment.auth.screens.SignupScreen
-import com.example.myappartment.data.CityData
-import com.example.myappartment.data.PostData
+import com.example.myappartment.authentication.navGraph.authNavGraph
 import com.example.myappartment.main.common.NotificationMessage
 import com.example.myappartment.main.screens.*
 import com.example.myappartment.ui.theme.LightPink
@@ -71,63 +67,83 @@ fun MyApp() {
 
     NotificationMessage(vm = vm)
 
-    NavHost(navController = navController, startDestination = DestinationScreen.Splash.route) {
-        composable(DestinationScreen.Splash.route) {
-            SplashScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.Signup.route) {
-            SignupScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.Login.route) {
-            LoginScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.Feed.route) {
-            FeedScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.Search.route) {
-            SearchScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.AddPost.route) { navBackStackEntry ->
-            val imageUri = navBackStackEntry.arguments?.getString("imageUri")
-            imageUri?.let {
-                AddNewPost(navController = navController, vm = vm, imageUri = it, post = null)
-            }
-        }
-        composable(DestinationScreen.EditPost.route) {
-            val postData =
-                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
-            postData?.let {
-                AddNewPost(navController = navController, vm = vm, imageUri = null, post = postData)
-            }
-        }
-        composable(DestinationScreen.Profile.route) {
-            ProfileScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.EditProfile.route) {
-            EditProfileScreen(navController = navController, vm = vm)
-        }
-        composable(DestinationScreen.SinglePost.route) {
-            val postData =
-                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
-            postData?.let {
-                SinglePostScreen(navController = navController, vm = vm, post = postData)
-            }
-        }
-        composable(DestinationScreen.CityFilter.route) {
-            val cityData =
-                navController.previousBackStackEntry?.arguments?.getParcelable<CityData>("city")
-            cityData?.let {
-                FilterByCityScreen(navController = navController, vm = vm, city = cityData)
-            }
-        }
-        composable(DestinationScreen.OpenImage.route) {
-            val postImageUrl =
-                navController.previousBackStackEntry?.savedStateHandle?.get<String>("imageUrl")
-            postImageUrl?.let {
-                ImageScreen(navController = navController, imageUrl = postImageUrl)
-            }
+    NavHost(
+        navController = navController,
+        route = Graph.ROOT,
+        startDestination = Graph.AUTHENTICATION
+    ) {
+        authNavGraph(navController = navController, vm = vm)
+        composable(route = Graph.HOME) {
+            MainScreen(vm = vm)
         }
     }
+
+//    NavHost(navController = navController, startDestination = DestinationScreen.Splash.route) {
+//        composable(DestinationScreen.Splash.route) {
+//            SplashScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.Signup.route) {
+//            SignupScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.Login.route) {
+//            LoginScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.Feed.route) {
+//            FeedScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.Search.route) {
+//            SearchScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.AddPost.route) { navBackStackEntry ->
+//            val imageUri = navBackStackEntry.arguments?.getString("imageUri")
+//            imageUri?.let {
+//                AddNewPost(navController = navController, vm = vm, imageUri = it, post = null)
+//            }
+//        }
+//        composable(DestinationScreen.EditPost.route) {
+//            val postData =
+//                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
+//            postData?.let {
+//                AddNewPost(navController = navController, vm = vm, imageUri = null, post = postData)
+//            }
+//        }
+//        composable(DestinationScreen.Profile.route) {
+//            ProfileScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.EditProfile.route) {
+//            EditProfileScreen(navController = navController, vm = vm)
+//        }
+//        composable(DestinationScreen.SinglePost.route) {
+//            val postData =
+//                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
+//            postData?.let {
+//                SinglePostScreen(navController = navController, vm = vm, post = postData)
+//            }
+//        }
+//        composable(DestinationScreen.CityFilter.route) {
+//            val cityData =
+//                navController.previousBackStackEntry?.arguments?.getParcelable<CityData>("city")
+//            cityData?.let {
+//                FilterByCityScreen(navController = navController, vm = vm, city = cityData)
+//            }
+//        }
+//        composable(DestinationScreen.OpenImage.route) {
+//            val postImageUrl =
+//                navController.previousBackStackEntry?.savedStateHandle?.get<String>("imageUrl")
+//            postImageUrl?.let {
+//                ImageScreen(navController = navController, imageUrl = postImageUrl)
+//            }
+//        }
+//    }
+}
+
+object Graph {
+    const val ROOT = "root_graph"
+    const val AUTHENTICATION = "auth_graph"
+    const val HOME = "home_graph"
+    const val DETAILS = "details_graph"
+    const val FILTER = "filter_graph"
+    const val PROFILE = "profile_graph"
 }
 
 @Preview(showBackground = true)

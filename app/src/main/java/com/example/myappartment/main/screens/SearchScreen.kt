@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.myappartment.DestinationScreen
+import com.example.myappartment.Graph
 import com.example.myappartment.NavParam
 import com.example.myappartment.main.common.*
 import com.example.myappartment.navigateTo
@@ -44,12 +45,14 @@ fun SearchScreen(navController: NavController, vm: AppViewModule) {
                 .fillMaxWidth()
                 .padding(8.dp)
         ) { city ->
-            navigateTo(
-                navController = navController,
-                destination = DestinationScreen.CityFilter,
-                NavParam("city", city)
-            )
+//            navigateTo(
+//                navController = navController,
+//                destination = DestinationScreen.CityFilter,
+//                NavParam("city", city)
+//            )
             vm.getPostsByCity(city.name)
+            navController.currentBackStackEntry?.savedStateHandle?.set("city", city)
+            navController.navigate(Graph.FILTER)
         }
         PostList(
             vm = vm,
@@ -63,16 +66,18 @@ fun SearchScreen(navController: NavController, vm: AppViewModule) {
             noPostsMessage = "Search apartments"
         ) { post ->
             vm.getUserById(post.userId)
-            navigateTo(
-                navController = navController,
-                destination = DestinationScreen.SinglePost,
-                NavParam("post", post)
-            )
+//            navigateTo(
+//                navController = navController,
+//                destination = DestinationScreen.SinglePost,
+//                NavParam("post", post)
+//            )
+            navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
+            navController.navigate(Graph.DETAILS)
         }
-        BottomNavigationMenu(
-            selectedItem = BottomNavigationItem.SEARCH,
-            navController = navController
-        )
+//        BottomNavigationMenu(
+//            selectedItem = BottomNavigationItem.SEARCH,
+//            navController = navController
+//        )
     }
 
 }

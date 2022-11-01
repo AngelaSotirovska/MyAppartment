@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.myappartment.DestinationScreen
+import com.example.myappartment.Graph
 import com.example.myappartment.NavParam
 import com.example.myappartment.data.CityData
 import com.example.myappartment.main.common.LineDivider
@@ -77,11 +78,13 @@ fun FilterByCityScreen(navController: NavController, vm: AppViewModule, city: Ci
                 noPostsMessage = "No available posts for ${city.name}"
             ) { post ->
                 vm.getUserById(post.userId)
-                navigateTo(
-                    navController = navController,
-                    destination = DestinationScreen.SinglePost,
-                    NavParam("post", post)
-                )
+//                navigateTo(
+//                    navController = navController,
+//                    destination = DestinationScreen.SinglePost,
+//                    NavParam("post", post)
+//                )
+                navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
+                navController.navigate(Graph.DETAILS)
             }
 //            GoogleMap(
 //                modifier = Modifier.fillMaxSize(),

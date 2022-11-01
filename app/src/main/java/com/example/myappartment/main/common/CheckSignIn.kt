@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import com.example.myappartment.DestinationScreen
+import com.example.myappartment.Graph
 import com.example.myappartment.viewModel.AppViewModule
 
 @Composable
@@ -13,8 +14,9 @@ fun CheckSignIn(vm: AppViewModule, navController: NavController) {
     val signedIn = vm.signedIn.value
     if (signedIn && !alreadyLoggedIn.value) {
         alreadyLoggedIn.value = true
-        navController.navigate(DestinationScreen.Feed.route) {
-            popUpTo(0)
-        }
+        navController.navigate(Graph.HOME)
+//        navController.navigate(DestinationScreen.Feed.route) {
+//            popUpTo(0)
+//        }
     }
 }

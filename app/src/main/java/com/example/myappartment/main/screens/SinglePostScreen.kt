@@ -26,15 +26,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myappartment.DestinationScreen
-import com.example.myappartment.NavParam
+import com.example.myappartment.*
 import com.example.myappartment.R
 import com.example.myappartment.data.PostData
 import com.example.myappartment.data.UserData
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ImageComposable
 import com.example.myappartment.main.common.ProgressSpinner
-import com.example.myappartment.navigateTo
 import com.example.myappartment.viewModel.AppViewModule
 import java.text.SimpleDateFormat
 import java.util.*
@@ -260,11 +258,13 @@ fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: 
                         navController.popBackStack()
                         vm.deletePost(post)
                     } else if (s == "Edit") {
-                        navigateTo(
-                            navController,
-                            DestinationScreen.EditPost,
-                            NavParam("post", post)
-                        )
+//                        navigateTo(
+//                            navController,
+//                            DestinationScreen.EditPost,
+//                            NavParam("post", post)
+//                        )
+                        navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
+                        navController.navigate(DestinationScreen.EditPost.route)
                     }
                 }) {
                     Text(text = s)

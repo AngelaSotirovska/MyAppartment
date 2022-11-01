@@ -137,7 +137,7 @@ fun AddNewPost(
                         selected
                     ) {
                         navController.popBackStack()
-                        navController.popBackStack()
+//                        navController.popBackStack()
                     }
                 } else {
                     vm.onNewPost(

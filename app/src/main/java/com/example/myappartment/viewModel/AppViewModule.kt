@@ -53,7 +53,7 @@ class AppViewModule @Inject constructor(
     val filerWords = listOf("the", "be", "to", "is", "of", "and", "or", "a", "in", "it")
 
     init {
-        auth.signOut()
+//        auth.signOut()
         val currentUser = auth.currentUser
         signedIn.value = currentUser != null
         currentUser?.uid?.let { uid ->

@@ -58,7 +58,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                 Text(text = usernameDisplay)
                 Text(text = contactDisplay)
                 OutlinedButton(
-                    onClick = { navigateTo(navController, DestinationScreen.EditProfile) },
+                    onClick = { navController.navigate(Graph.PROFILE) },
                     modifier = Modifier
                         .width(150.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
@@ -85,13 +85,14 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                 noPostsMessage = "You haven't posted apartment yet"
             ) { post ->
                 vm.getUserById(post.userId)
-                navigateTo(navController, DestinationScreen.SinglePost, NavParam("post", post))
+                navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
+                navController.navigate(Graph.DETAILS)
             }
         }
-        BottomNavigationMenu(
-            selectedItem = BottomNavigationItem.PROFILE,
-            navController = navController
-        )
+//        BottomNavigationMenu(
+//            selectedItem = BottomNavigationItem.PROFILE,
+//            navController = navController
+//        )
     }
     if (isLoading)
         ProgressSpinner()
