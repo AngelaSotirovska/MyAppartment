@@ -108,7 +108,7 @@ fun SearchBar(searchTerm: String, onSearchChange: (String) -> Unit, onSearch: ()
         singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
             backgroundColor = Color.Transparent,
-            textColor = Color.Black,
+            textColor = MaterialTheme.colors.onSecondary,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent

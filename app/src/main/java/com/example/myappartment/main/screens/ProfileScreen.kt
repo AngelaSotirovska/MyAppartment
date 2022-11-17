@@ -34,7 +34,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .fillMaxWidth()
-                    .background(brush = Brush.verticalGradient(listOf(LightPink, Color.White))),
+                    .background(brush = Brush.verticalGradient(listOf(MaterialTheme.colors.primary, MaterialTheme.colors.background))),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 ProfileImage(userData?.imageUrl) {}
@@ -70,7 +70,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                     shape = RoundedCornerShape(10)
                 )
                 {
-                    Text(text = "Edit Profile", color = Color.Black)
+                    Text(text = "Edit Profile", color = MaterialTheme.colors.onSecondary)
                 }
             }
             PostList(

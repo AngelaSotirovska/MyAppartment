@@ -52,6 +52,8 @@ class AppViewModule @Inject constructor(
     val filterPostsLoading = mutableStateOf(false)
     val filerWords = listOf("the", "be", "to", "is", "of", "and", "or", "a", "in", "it")
 
+    val isDarkMode = mutableStateOf(false)
+
     init {
 //        auth.signOut()
         val currentUser = auth.currentUser

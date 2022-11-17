@@ -26,7 +26,7 @@ fun SplashScreen(navController: NavController, vm: AppViewModule) {
 
     LaunchedEffect(key1 = true) {
         delay(3000)
-        navigateTo(navController, DestinationScreen.Signup)
+        navigateTo(navController, DestinationScreen.Login)
     }
 
     Box(

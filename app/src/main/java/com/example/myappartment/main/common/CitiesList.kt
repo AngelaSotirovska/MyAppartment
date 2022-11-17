@@ -64,7 +64,7 @@ fun CityItem(item: CityData, onCityClick: (CityData) -> Unit) {
             .clickable { item?.let { city -> onCityClick(city) } },
         shape = MaterialTheme.shapes.medium,
         elevation = 5.dp,
-        backgroundColor = Gray50
+        backgroundColor = MaterialTheme.colors.secondary
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(imageVector = Icons.Filled.Place, contentDescription = null)

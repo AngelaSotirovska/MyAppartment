@@ -248,7 +248,7 @@ fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: 
             modifier = Modifier
                 .width(100.dp)
                 .background(
-                    Color.White
+                    MaterialTheme.colors.secondary
                 )
         ) {
             items.forEachIndexed { index, s ->
@@ -258,16 +258,11 @@ fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: 
                         navController.popBackStack()
                         vm.deletePost(post)
                     } else if (s == "Edit") {
-//                        navigateTo(
-//                            navController,
-//                            DestinationScreen.EditPost,
-//                            NavParam("post", post)
-//                        )
                         navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
                         navController.navigate(DestinationScreen.EditPost.route)
                     }
                 }) {
-                    Text(text = s)
+                    Text(text = s, color = MaterialTheme.colors.onSecondary)
                     if (index < 3) {
                         Spacer(modifier = Modifier.height(4.dp))
                     }

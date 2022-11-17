@@ -63,7 +63,7 @@ fun PostItem(item: PostData, vm: AppViewModule, onPostClick: (PostData) -> Unit)
             .clickable { item?.let { post -> onPostClick(post) } },
         shape = MaterialTheme.shapes.medium,
         elevation = 5.dp,
-        backgroundColor = Gray50
+        backgroundColor = MaterialTheme.colors.secondary
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             ImageComposable(

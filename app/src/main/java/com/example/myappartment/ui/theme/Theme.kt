@@ -6,19 +6,24 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.example.myappartment.MyApp
+import com.example.myappartment.ThemeState
+import com.example.myappartment.viewModel.AppViewModule
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200,
-    background = Color.Black
+    primary = LightPink,
+    primaryVariant = LightPink,
+    secondary = Color.DarkGray,
+    background = Color.Black,
+    onSecondary = Color.White,
 )
 
 private val LightColorPalette = lightColors(
     primary = LightPink,
     primaryVariant = LightPink,
     secondary = Gray50,
-    background = Color.White
+    background = Color.White,
+    onSecondary = Color.Black,
 
     /* Other default colors to override
     background = Color.White,
@@ -32,7 +37,8 @@ private val LightColorPalette = lightColors(
 
 @Composable
 fun MyAppartmentTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
-    val colors = if (darkTheme) {
+    val isDark = ThemeState.darkModeState.value
+    val colors = if (isDark) {
         DarkColorPalette
     } else {
         LightColorPalette

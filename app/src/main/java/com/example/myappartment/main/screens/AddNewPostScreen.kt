@@ -185,7 +185,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }
@@ -234,7 +234,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }
@@ -248,7 +248,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }
@@ -262,7 +262,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }
@@ -276,7 +276,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }
@@ -290,7 +290,7 @@ fun AddNewPost(
                 singleLine = false,
                 colors = TextFieldDefaults.textFieldColors(
                     backgroundColor = Color.Transparent,
-                    textColor = Color.Black
+                    textColor = MaterialTheme.colors.onSecondary
                 )
             )
         }

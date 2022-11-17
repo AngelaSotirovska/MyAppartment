@@ -27,6 +27,7 @@ import androidx.navigation.Navigation
 import androidx.navigation.navDeepLink
 import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
+import com.example.myappartment.ThemeState
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ProgressSpinner
 import com.example.myappartment.main.common.UserImageCard
@@ -61,10 +62,8 @@ fun EditProfileScreen(navController: NavController, vm: AppViewModule) {
             onBack = { navigateTo(navController = navController, DestinationScreen.Profile) },
             onLogOut = {
                 vm.logOut()
-//                navController.popBackStack(route = Graph.AUTHENTICATION, inclusive = false)
-                navController.navigate(DestinationScreen.Login.route) {
-                    launchSingleTop = true
-                    restoreState = true
+                navController.navigate(route = DestinationScreen.Login.route){
+                    popUpTo(0)
                 }
             }
         )
@@ -129,7 +128,7 @@ fun EditProfileContent(
                     value = name, onValueChange = onNameChange,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Transparent,
-                        textColor = Black
+                        textColor = MaterialTheme.colors.onSecondary
                     )
                 )
             }
@@ -145,7 +144,7 @@ fun EditProfileContent(
                     value = lastname, onValueChange = onLastnameChange,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Transparent,
-                        textColor = Black
+                        textColor = MaterialTheme.colors.onSecondary
                     )
                 )
             }
@@ -161,7 +160,7 @@ fun EditProfileContent(
                     value = username, onValueChange = onUsernameChange,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Transparent,
-                        textColor = Black
+                        textColor = MaterialTheme.colors.onSecondary
                     )
                 )
             }
@@ -177,7 +176,7 @@ fun EditProfileContent(
                     value = contact, onValueChange = onContactChange,
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Transparent,
-                        textColor = Black
+                        textColor = MaterialTheme.colors.onSecondary
                     )
                 )
             }
@@ -188,6 +187,11 @@ fun EditProfileContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
+                Button(onClick = {
+                    ThemeState.darkModeState.value = !ThemeState.darkModeState.value
+                }) {
+                    Text(text = "Theme Toggle Button")
+                }
                 OutlinedButton(
                     onClick = { onLogOut.invoke() },
                     modifier = Modifier
@@ -202,7 +206,7 @@ fun EditProfileContent(
                     shape = RoundedCornerShape(10)
                 )
                 {
-                    Text(text = "Log out", color = Black)
+                    Text(text = "Log out", color = MaterialTheme.colors.onSecondary)
                 }
             }
         }

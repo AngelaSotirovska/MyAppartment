@@ -2,8 +2,10 @@ package com.example.myappartment
 
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -28,7 +31,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MyAppartmentTheme {
-                window?.setStatusBarColor(LightPink.toArgb())
+                window?.setStatusBarColor(MaterialTheme.colors.primary.toArgb())
                 // A surface container using the 'background' color from the theme
                 Surface(
                     color = MaterialTheme.colors.background
@@ -39,7 +42,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 sealed class DestinationScreen(val route: String) {
     object Signup : DestinationScreen("signup")
@@ -68,7 +70,7 @@ fun MyApp() {
     NotificationMessage(vm = vm)
 
     NavHost(
-        navController = navController,
+        navController = navController as NavHostController,
         route = Graph.ROOT,
         startDestination = Graph.AUTHENTICATION
     ) {
