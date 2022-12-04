@@ -7,7 +7,8 @@ data class UserData(
     var username: String? = null,
     var imageUrl: String? = null,
     var contactNumber: String? = null,
-    var likedPosts: List<String>? = null
+    var likedPosts: List<String>? = null,
+    var darkMode: Boolean? = null
 ) {
     fun toMap() = mapOf(
         "userId" to userId,

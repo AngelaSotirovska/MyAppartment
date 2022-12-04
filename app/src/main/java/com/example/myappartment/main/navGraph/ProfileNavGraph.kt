@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
-import com.example.myappartment.authentication.EditProfileScreen
+import com.example.myappartment.authentication.screens.EditProfileScreen
 import com.example.myappartment.viewModel.AppViewModule
 
 fun NavGraphBuilder.profileNavGraph(navController: NavHostController, vm: AppViewModule) {

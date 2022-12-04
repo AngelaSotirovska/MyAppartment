@@ -6,6 +6,7 @@ import androidx.compose.runtime.remember
 import androidx.navigation.NavController
 import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
+import com.example.myappartment.ThemeState
 import com.example.myappartment.viewModel.AppViewModule
 
 @Composable
@@ -15,6 +16,7 @@ fun CheckSignIn(vm: AppViewModule, navController: NavController) {
     if (signedIn && !alreadyLoggedIn.value) {
         alreadyLoggedIn.value = true
         navController.navigate(Graph.HOME)
+//        ThemeState.darkModeState.value = vm.userData.value?.darkMode!!
 //        navController.navigate(DestinationScreen.Feed.route) {
 //            popUpTo(0)
 //        }

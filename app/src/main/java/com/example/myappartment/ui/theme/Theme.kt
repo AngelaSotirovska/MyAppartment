@@ -48,6 +48,6 @@ fun MyAppartmentTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Comp
         colors = colors,
         typography = Typography,
         shapes = Shapes,
-        content = content
+        content = content,
     )
 }

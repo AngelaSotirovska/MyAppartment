@@ -29,6 +29,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        var isRestore: Boolean = false;
+        if(intent.hasExtra("restore")){
+            isRestore = intent.getBooleanExtra("restore", true)
+        }
+        Log.i("restore", isRestore.toString())
         setContent {
             MyAppartmentTheme {
                 window?.setStatusBarColor(MaterialTheme.colors.primary.toArgb())
@@ -36,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     color = MaterialTheme.colors.background
                 ) {
-                    MyApp()
+                    MyApp(isRestore = isRestore)
                 }
             }
         }
@@ -63,80 +68,22 @@ sealed class DestinationScreen(val route: String) {
 }
 
 @Composable
-fun MyApp() {
+fun MyApp(isRestore: Boolean) {
     val vm = hiltViewModel<AppViewModule>()
     val navController = rememberNavController()
 
     NotificationMessage(vm = vm)
 
     NavHost(
-        navController = navController as NavHostController,
+        navController = navController,
         route = Graph.ROOT,
         startDestination = Graph.AUTHENTICATION
     ) {
-        authNavGraph(navController = navController, vm = vm)
+        authNavGraph(navController = navController, vm = vm, isRestore = isRestore)
         composable(route = Graph.HOME) {
             MainScreen(vm = vm)
         }
     }
-
-//    NavHost(navController = navController, startDestination = DestinationScreen.Splash.route) {
-//        composable(DestinationScreen.Splash.route) {
-//            SplashScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.Signup.route) {
-//            SignupScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.Login.route) {
-//            LoginScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.Feed.route) {
-//            FeedScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.Search.route) {
-//            SearchScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.AddPost.route) { navBackStackEntry ->
-//            val imageUri = navBackStackEntry.arguments?.getString("imageUri")
-//            imageUri?.let {
-//                AddNewPost(navController = navController, vm = vm, imageUri = it, post = null)
-//            }
-//        }
-//        composable(DestinationScreen.EditPost.route) {
-//            val postData =
-//                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
-//            postData?.let {
-//                AddNewPost(navController = navController, vm = vm, imageUri = null, post = postData)
-//            }
-//        }
-//        composable(DestinationScreen.Profile.route) {
-//            ProfileScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.EditProfile.route) {
-//            EditProfileScreen(navController = navController, vm = vm)
-//        }
-//        composable(DestinationScreen.SinglePost.route) {
-//            val postData =
-//                navController.previousBackStackEntry?.arguments?.getParcelable<PostData>("post")
-//            postData?.let {
-//                SinglePostScreen(navController = navController, vm = vm, post = postData)
-//            }
-//        }
-//        composable(DestinationScreen.CityFilter.route) {
-//            val cityData =
-//                navController.previousBackStackEntry?.arguments?.getParcelable<CityData>("city")
-//            cityData?.let {
-//                FilterByCityScreen(navController = navController, vm = vm, city = cityData)
-//            }
-//        }
-//        composable(DestinationScreen.OpenImage.route) {
-//            val postImageUrl =
-//                navController.previousBackStackEntry?.savedStateHandle?.get<String>("imageUrl")
-//            postImageUrl?.let {
-//                ImageScreen(navController = navController, imageUrl = postImageUrl)
-//            }
-//        }
-//    }
 }
 
 object Graph {
@@ -152,7 +99,7 @@ object Graph {
 @Composable
 fun DefaultPreview() {
     MyAppartmentTheme {
-        MyApp()
+        MyApp(false)
     }
 }
 

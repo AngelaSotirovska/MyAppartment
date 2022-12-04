@@ -1,7 +1,8 @@
-package com.example.myappartment.authentication
+package com.example.myappartment.authentication.screens
 
+import android.app.Activity
+import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -17,25 +18,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.Navigation
-import androidx.navigation.navDeepLink
-import com.example.myappartment.DestinationScreen
-import com.example.myappartment.Graph
-import com.example.myappartment.ThemeState
+import com.example.myappartment.*
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ProgressSpinner
 import com.example.myappartment.main.common.UserImageCard
-import com.example.myappartment.navigateTo
 import com.example.myappartment.viewModel.AppViewModule
 
 @Composable
 fun EditProfileScreen(navController: NavController, vm: AppViewModule) {
+    val activity = (LocalContext.current as? Activity)
     val isLoading = vm.inProgress.value
     if (isLoading)
         ProgressSpinner()
@@ -62,9 +58,13 @@ fun EditProfileScreen(navController: NavController, vm: AppViewModule) {
             onBack = { navigateTo(navController = navController, DestinationScreen.Profile) },
             onLogOut = {
                 vm.logOut()
-                navController.navigate(route = DestinationScreen.Login.route){
-                    popUpTo(0)
-                }
+//                navController.navigate(route = DestinationScreen.Login.route){
+//                    popUpTo(0)
+//                }
+                activity?.finish()
+                val restoreIntent = Intent(activity, MainActivity::class.java)
+                restoreIntent.putExtra("restore", true)
+                activity?.startActivity(restoreIntent)
             }
         )
     }
@@ -188,9 +188,9 @@ fun EditProfileContent(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Button(onClick = {
-                    ThemeState.darkModeState.value = !ThemeState.darkModeState.value
+                    vm.changeMode(!ThemeState.darkModeState.value)
                 }) {
-                    Text(text = "Theme Toggle Button")
+                    Text(text = if(ThemeState.darkModeState.value) "Switch to light mode" else "Switch to dark mode")
                 }
                 OutlinedButton(
                     onClick = { onLogOut.invoke() },

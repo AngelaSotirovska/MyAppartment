@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.myappartment.data.CityData
 import com.example.myappartment.Event
+import com.example.myappartment.ThemeState
 import com.example.myappartment.data.PostData
 import com.example.myappartment.data.UserData
 import com.google.firebase.auth.FirebaseAuth
@@ -82,7 +83,7 @@ class AppViewModule @Inject constructor(
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
                                 signedIn.value = true
-                                createOrUpdateProfile(username = username)
+                                createOrUpdateProfile(username = username, darkMode = false)
                             } else {
                                 handleException(task.exception, "Sign up failed")
 
@@ -109,6 +110,7 @@ class AppViewModule @Inject constructor(
                     auth.currentUser?.uid?.let { uid ->
                         getUserData(uid)
                     }
+                    ThemeState.darkModeState.value = userData.value?.darkMode!!
                 } else {
                     handleException(task.exception, "Login failed")
                     inProgress.value = false
@@ -125,6 +127,7 @@ class AppViewModule @Inject constructor(
         username: String? = null,
         lastName: String? = null,
         contactNumber: String? = null,
+        darkMode: Boolean? = null,
         imageUrl: String? = null,
     ) {
         val uid = auth.currentUser?.uid
@@ -134,7 +137,8 @@ class AppViewModule @Inject constructor(
             lastName = lastName ?: userData.value?.lastName,
             username = username ?: userData.value?.username,
             imageUrl = imageUrl ?: userData.value?.imageUrl,
-            contactNumber = contactNumber ?: userData.value?.contactNumber
+            contactNumber = contactNumber ?: userData.value?.contactNumber,
+            darkMode = darkMode ?: userData.value?.darkMode
         )
         uid?.let { uid ->
             inProgress.value = true
@@ -220,6 +224,34 @@ class AppViewModule @Inject constructor(
             createOrUpdateProfile(imageUrl = it.toString())
         }
     }
+
+    fun changeMode(darkMode: Boolean) {
+        inProgress.value = true
+        val uid = auth.currentUser?.uid
+
+
+        uid?.let { uid ->
+            inProgress.value = true
+            db.collection(USERS)
+                .document(uid)
+                .get()
+                .addOnSuccessListener {
+                    ThemeState.darkModeState.value = darkMode
+                    it.reference.update("darkMode", darkMode)
+                    inProgress.value = false
+                }
+                .addOnFailureListener { exc ->
+                    handleException(exc, "Cannot change screen mode.")
+                    inProgress.value = false
+                }
+        }
+    }
+
+//    fun changeScreenMode(darkMode: Boolean) {
+//        changeMode(darkMode) {
+//            createOrUpdateProfile(darkMode = darkMode)
+//        }
+//    }
 
 
     fun logOut() {

@@ -31,7 +31,7 @@ fun FeedScreen(navController: NavController, vm: AppViewModule) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.logo4), modifier = Modifier
+                    painter = painterResource(id = if(ThemeState.darkModeState.value) R.drawable.ic_logo_dark else R.drawable.ic_logo_light), modifier = Modifier
                         .width(85.dp)
                         .height(70.dp), contentDescription = null
                 )

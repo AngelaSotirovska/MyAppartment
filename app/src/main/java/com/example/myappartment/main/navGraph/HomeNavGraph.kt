@@ -39,6 +39,6 @@ fun HomeNavGraph(navController: NavController, vm: AppViewModule) {
         detailsNavGraph(navController, vm)
         filterNavGraph(navController, vm)
         profileNavGraph(navController, vm)
-        authNavGraph(navController, vm)
+//        authNavGraph(navController, vm)
     }
 }
