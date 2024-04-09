@@ -20,10 +20,12 @@ import com.example.myappartment.DestinationScreen
 import com.example.myappartment.main.navGraph.BottomBarScreen
 import com.example.myappartment.main.navGraph.HomeNavGraph
 import com.example.myappartment.navigateTo
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.CityViewModel
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 
 @Composable
-fun MainScreen(navController: NavHostController = rememberNavController(), vm: AppViewModule) {
+fun MainScreen(navController: NavHostController = rememberNavController(), vm: UserViewModel, cityVm: CityViewModel, postVm: PostViewModel) {
     Scaffold(
         bottomBar = { BottomBar(navController = navController) }
     ) {
@@ -34,7 +36,7 @@ fun MainScreen(navController: NavHostController = rememberNavController(), vm: A
                     bottom = it.calculateBottomPadding()
                 )
         ) {
-            HomeNavGraph(navController = navController, vm = vm)
+            HomeNavGraph(navController = navController, vm = vm, citiesVm = cityVm, postVm = postVm)
         }
     }
 }

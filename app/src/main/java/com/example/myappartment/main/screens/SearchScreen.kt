@@ -17,25 +17,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
-import com.example.myappartment.NavParam
+import com.example.myappartment.R
 import com.example.myappartment.main.common.*
-import com.example.myappartment.navigateTo
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.CityViewModel
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 
 @Composable
-fun SearchScreen(navController: NavController, vm: AppViewModule) {
+fun SearchScreen(navController: NavController, vm: UserViewModel, citiesVm: CityViewModel, postVm: PostViewModel) {
     var searchTerm by rememberSaveable { mutableStateOf("") }
-    val searchedPosts = vm.searchPosts.value
-    val searchedPostsLoading = vm.searchedPostsProgress.value
-    val cities = vm.cities.value
+    val searchedPosts = postVm.searchPosts.value
+    val searchedPostsLoading = postVm.searchedPostsProgress.value
+    val cities = citiesVm.cities.value
 
     Column {
-        SearchBar(searchTerm, { searchTerm = it }, { vm.searchPosts(searchTerm) })
+        SearchBar(searchTerm, { searchTerm = it }, { postVm.searchPosts(searchTerm) })
         CitiesList(
             vm = vm,
             isContextLoading = false,
@@ -50,7 +51,7 @@ fun SearchScreen(navController: NavController, vm: AppViewModule) {
 //                destination = DestinationScreen.CityFilter,
 //                NavParam("city", city)
 //            )
-            vm.getPostsByCity(city.name)
+            postVm.getPostsByCity(city.name)
             navController.currentBackStackEntry?.savedStateHandle?.set("city", city)
             navController.navigate(Graph.FILTER)
         }
@@ -63,7 +64,7 @@ fun SearchScreen(navController: NavController, vm: AppViewModule) {
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(8.dp),
-            noPostsMessage = "Search apartments"
+            noPostsMessage = stringResource(R.string.searchApartments)
         ) { post ->
             vm.getUserById(post.userId)
 //            navigateTo(

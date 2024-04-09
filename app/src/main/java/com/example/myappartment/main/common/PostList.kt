@@ -5,11 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
-import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -18,12 +15,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.myappartment.data.PostData
-import com.example.myappartment.ui.theme.Gray50
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 
 @Composable
 fun PostList(
-    vm: AppViewModule,
+    vm: UserViewModel,
     isContextLoading: Boolean,
     postsLoading: Boolean,
     posts: List<PostData>,
@@ -53,7 +49,7 @@ fun PostList(
 }
 
 @Composable
-fun PostItem(item: PostData, vm: AppViewModule, onPostClick: (PostData) -> Unit) {
+fun PostItem(item: PostData, vm: UserViewModel, onPostClick: (PostData) -> Unit) {
 
     Card(
         modifier = Modifier

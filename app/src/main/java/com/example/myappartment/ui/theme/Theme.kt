@@ -6,9 +6,7 @@ import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.myappartment.MyApp
 import com.example.myappartment.ThemeState
-import com.example.myappartment.viewModel.AppViewModule
 
 private val DarkColorPalette = darkColors(
     primary = LightPink,

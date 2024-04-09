@@ -3,82 +3,109 @@ package com.example.myappartment.main.screens
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
-import androidx.compose.ui.geometry.Size;
-import androidx.compose.ui.text.font.FontWeight
 import coil.compose.rememberImagePainter
+import com.example.myappartment.R
 import com.example.myappartment.data.PostData
 import com.example.myappartment.main.common.ImageComposable
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ProgressSpinner
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.main.common.TextField
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 
 
 @Composable
 fun AddNewPost(
     navController: NavController,
-    vm: AppViewModule,
+    vm: UserViewModel,
+    postVm: PostViewModel,
     imageUri: String?,
     post: PostData?
 ) {
+
     val image by remember { mutableStateOf(imageUri) }
 
     var title by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.title.toString())
+            mutableStateOf(post!!.title.toString())
         else
             mutableStateOf("")
     }
 
     var description by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.description.toString())
+            mutableStateOf(post!!.description.toString())
         else
             mutableStateOf("")
     }
 
     var location by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.location.toString())
+            mutableStateOf(post!!.location.toString())
         else
             mutableStateOf("")
     }
 
     var price by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.price.toString())
+            mutableStateOf(post!!.price.toString())
         else
             mutableStateOf("")
     }
 
     var rooms by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.rooms.toString())
+            mutableStateOf(post!!.rooms.toString())
         else
             mutableStateOf("")
     }
 
     var squareFootage by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.squareFootage.toString())
+            mutableStateOf(post!!.squareFootage.toString())
         else
             mutableStateOf("")
     }
@@ -87,21 +114,17 @@ fun AddNewPost(
     val cities = listOf("Skopje", "Bitola", "Gevgelija", "Kumanovo", "Veles")
     var selected by rememberSaveable {
         if (post != null)
-            mutableStateOf(post.city.toString())
+            mutableStateOf(post!!.city.toString())
         else
             mutableStateOf("")
     }
     var dropdownSize by remember { mutableStateOf(Size.Zero) }
 
 
-    val icon = if (expanded)
-        Icons.Filled.KeyboardArrowUp
-    else
-        Icons.Filled.KeyboardArrowDown
+    val icon = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown
 
     val scrollState = rememberScrollState()
     val focusManager = LocalFocusManager.current
-
 
 
     Column(
@@ -109,6 +132,8 @@ fun AddNewPost(
             .verticalScroll(scrollState)
             .padding(8.dp)
             .fillMaxWidth()
+            .wrapContentHeight()
+
     ) {
         Row(
             modifier = Modifier
@@ -125,9 +150,9 @@ fun AddNewPost(
             Text(text = "Save", fontWeight = FontWeight.Bold, modifier = Modifier.clickable {
                 focusManager.clearFocus()
                 if (post != null) {
-                    vm.onEditPost(
-                        post.postId,
-                        post.postImage,
+                    postVm.onEditPost(
+                        post!!.postId,
+                        post!!.postImage,
                         title,
                         description,
                         location,
@@ -137,10 +162,9 @@ fun AddNewPost(
                         selected
                     ) {
                         navController.popBackStack()
-//                        navController.popBackStack()
                     }
                 } else {
-                    vm.onNewPost(
+                    postVm.onNewPost(
                         Uri.parse(imageUri),
                         title,
                         description,
@@ -158,7 +182,7 @@ fun AddNewPost(
         LineDivider()
         if (imageUri == null) {
             ImageComposable(
-                data = post?.postImage,
+                data = post!!.postImage,
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -174,20 +198,10 @@ fun AddNewPost(
                 contentScale = ContentScale.FillWidth
             )
         }
-
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = title,
-                onValueChange = { title = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Title") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = title, label = "Title", isForNumbers = false, onValueChange = { newValue ->
+                title = newValue
+            })
         }
 
         Row(modifier = Modifier.padding(8.dp)) {
@@ -202,10 +216,17 @@ fun AddNewPost(
                     .onGloballyPositioned { coordinates ->
                         dropdownSize = coordinates.size.toSize()
                     },
-                label = { Text("City") },
+                label = { Text(stringResource(R.string.city)) },
                 trailingIcon = {
                     Icon(icon, null)
-                }
+                },
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    disabledTextColor = LocalContentColor.current.copy(LocalContentAlpha.current),
+                    backgroundColor = Color.Transparent,
+                    disabledBorderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+                    disabledLabelColor = MaterialTheme.colors.onSurface.copy(ContentAlpha.medium),
+                )
+
             )
             DropdownMenu(
                 expanded = expanded,
@@ -225,76 +246,36 @@ fun AddNewPost(
         }
 
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Description") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = description, label = "Description", isForNumbers = false, onValueChange = { newValue ->
+                description = newValue
+            })
         }
+
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = location,
-                onValueChange = { location = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Location") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = location, label = "Location", isForNumbers = false, onValueChange = { newValue ->
+                location = newValue
+            })
         }
+
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = price,
-                onValueChange = { price = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Price (in Euros)") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = price, label = "Price", isForNumbers = true, onValueChange = { newValue ->
+                price = newValue
+            })
         }
+
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = rooms,
-                onValueChange = { rooms = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Rooms") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = rooms, label = "Rooms", isForNumbers = true, onValueChange = { newValue ->
+                rooms = newValue
+            })
         }
+
         Row(modifier = Modifier.padding(8.dp)) {
-            OutlinedTextField(
-                value = squareFootage,
-                onValueChange = { squareFootage = it },
-                modifier = Modifier
-                    .fillMaxWidth(),
-                label = { Text(text = "Square Footage") },
-                singleLine = false,
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.Transparent,
-                    textColor = MaterialTheme.colors.onSecondary
-                )
-            )
+            TextField(value = squareFootage, label = "Square footage", isForNumbers = true, onValueChange = { newValue ->
+                squareFootage = newValue
+            })
         }
     }
+//    }
     val inProgress = vm.inProgress.value
     if (inProgress)
         ProgressSpinner()

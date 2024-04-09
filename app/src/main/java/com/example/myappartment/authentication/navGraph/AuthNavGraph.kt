@@ -7,11 +7,11 @@ import androidx.navigation.navigation
 import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
 import com.example.myappartment.authentication.screens.LoginScreen
-import com.example.myappartment.authentication.SignupScreen
+import com.example.myappartment.authentication.screens.SignupScreen
 import com.example.myappartment.main.screens.SplashScreen
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 
-fun NavGraphBuilder.authNavGraph(navController: NavController, vm: AppViewModule, isRestore: Boolean) {
+fun NavGraphBuilder.authNavGraph(navController: NavController, vm: UserViewModel, isRestore: Boolean) {
     lateinit var startActivity: String
     if(isRestore) {
         startActivity = DestinationScreen.Login.route

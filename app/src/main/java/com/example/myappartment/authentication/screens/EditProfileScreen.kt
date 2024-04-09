@@ -2,6 +2,7 @@ package com.example.myappartment.authentication.screens
 
 import android.app.Activity
 import android.content.Intent
+import androidx.compose.ui.graphics.Color
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -20,17 +21,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myappartment.*
+import com.example.myappartment.R
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ProgressSpinner
 import com.example.myappartment.main.common.UserImageCard
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 
 @Composable
-fun EditProfileScreen(navController: NavController, vm: AppViewModule) {
+fun EditProfileScreen(navController: NavController, vm: UserViewModel) {
     val activity = (LocalContext.current as? Activity)
     val isLoading = vm.inProgress.value
     if (isLoading)
@@ -72,7 +75,7 @@ fun EditProfileScreen(navController: NavController, vm: AppViewModule) {
 
 @Composable
 fun EditProfileContent(
-    vm: AppViewModule,
+    vm: UserViewModel,
     name: String,
     lastname: String,
     username: String,
@@ -103,11 +106,11 @@ fun EditProfileContent(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Back",
+                    text = stringResource(R.string.back),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { onBack.invoke() })
                 Text(
-                    text = "Save",
+                    text = stringResource(R.string.save),
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.clickable { onSave.invoke() })
 
@@ -123,7 +126,7 @@ fun EditProfileContent(
                     .padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Name", modifier = Modifier.width(200.dp))
+                Text(text = stringResource(R.string.name), modifier = Modifier.width(200.dp))
                 TextField(
                     value = name, onValueChange = onNameChange,
                     colors = TextFieldDefaults.textFieldColors(
@@ -139,7 +142,7 @@ fun EditProfileContent(
                     .padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Last name", modifier = Modifier.width(200.dp))
+                Text(text = stringResource(R.string.lastName), modifier = Modifier.width(200.dp))
                 TextField(
                     value = lastname, onValueChange = onLastnameChange,
                     colors = TextFieldDefaults.textFieldColors(
@@ -155,7 +158,7 @@ fun EditProfileContent(
                     .padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Username", modifier = Modifier.width(200.dp))
+                Text(text = stringResource(R.string.username), modifier = Modifier.width(200.dp))
                 TextField(
                     value = username, onValueChange = onUsernameChange,
                     colors = TextFieldDefaults.textFieldColors(
@@ -171,7 +174,7 @@ fun EditProfileContent(
                     .padding(start = 4.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Contact information", modifier = Modifier.width(200.dp))
+                Text(text = stringResource(R.string.contactInformation), modifier = Modifier.width(200.dp))
                 TextField(
                     value = contact, onValueChange = onContactChange,
                     colors = TextFieldDefaults.textFieldColors(
@@ -187,13 +190,35 @@ fun EditProfileContent(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Button(onClick = {
-                    vm.changeMode(!ThemeState.darkModeState.value)
-                }) {
-                    Text(text = if(ThemeState.darkModeState.value) "Switch to light mode" else "Switch to dark mode")
-                }
+                Text(text = stringResource(R.string.darkMode))
+                Switch(
+                    checked = ThemeState.darkModeState.value,
+                    onCheckedChange = { vm.changeMode(!ThemeState.darkModeState.value) },
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = MaterialTheme.colors.primary,
+                        uncheckedThumbColor = Color.DarkGray,
+                        checkedTrackColor = MaterialTheme.colors.primary,
+                        uncheckedTrackColor = Color.DarkGray,
+                    )
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .padding(top = 16.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+
+//                Button(onClick = {
+//                    vm.changeMode(!ThemeState.darkModeState.value)
+//                }) {
+//                    Text(text = if (ThemeState.darkModeState.value) "Switch to light mode" else "Switch to dark mode")
+//                }
                 OutlinedButton(
-                    onClick = { onLogOut.invoke() },
+                    onClick = {
+                        onLogOut.invoke()
+                        ThemeState.darkModeState.value = false
+                    },
                     modifier = Modifier
                         .width(150.dp)
                         .height(50.dp),
@@ -206,7 +231,7 @@ fun EditProfileContent(
                     shape = RoundedCornerShape(10)
                 )
                 {
-                    Text(text = "Log out", color = MaterialTheme.colors.onSecondary)
+                    Text(text = stringResource(R.string.logOut), color = MaterialTheme.colors.onSecondary)
                 }
             }
         }
@@ -215,7 +240,7 @@ fun EditProfileContent(
 }
 
 @Composable
-fun EditProfileImage(imageUrl: String?, vm: AppViewModule) {
+fun EditProfileImage(imageUrl: String?, vm: UserViewModel) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -237,7 +262,7 @@ fun EditProfileImage(imageUrl: String?, vm: AppViewModule) {
                     .padding(8.dp)
                     .size(80.dp)
             )
-            Text(text = "Change profile picture")
+            Text(text = stringResource(R.string.changeProfilePicture))
         }
         val isLoading = vm.inProgress.value
         if (isLoading)

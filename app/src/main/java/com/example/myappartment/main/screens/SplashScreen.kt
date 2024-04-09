@@ -17,12 +17,12 @@ import com.example.myappartment.DestinationScreen
 import com.example.myappartment.R
 import com.example.myappartment.navigateTo
 import com.example.myappartment.ui.theme.LightPink
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun SplashScreen(navController: NavController, vm: AppViewModule) {
+fun SplashScreen(navController: NavController, vm: UserViewModel) {
 
     LaunchedEffect(key1 = true) {
         delay(3000)

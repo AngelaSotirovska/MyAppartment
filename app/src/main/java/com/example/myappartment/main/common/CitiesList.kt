@@ -1,10 +1,13 @@
 package com.example.myappartment.main.common
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -15,15 +18,15 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.myappartment.R
 import com.example.myappartment.data.CityData
-import com.example.myappartment.ui.theme.Gray50
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CitiesList(
-    vm: AppViewModule,
+    vm: UserViewModel,
     isContextLoading: Boolean,
     citiesLoading: Boolean,
     cities: List<CityData>,
@@ -39,13 +42,14 @@ fun CitiesList(
             verticalArrangement = Arrangement.Center
         ) {
             if (!isContextLoading) {
-                Text(text = "No cities to show")
+                Text(text = stringResource(R.string.noCities))
             }
         }
     } else {
-        LazyVerticalGrid(
-            cells = GridCells.Fixed(3),
-            contentPadding = PaddingValues(8.dp)
+        LazyRow(
+//            cells = GridCells.Fixed(3),
+            contentPadding = PaddingValues(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             items(cities) { item ->
                 CityItem(item = item, onCityClick = onCityClick)
@@ -61,14 +65,14 @@ fun CityItem(item: CityData, onCityClick: (CityData) -> Unit) {
         modifier = Modifier
             .height(50.dp)
             .padding(4.dp)
-            .clickable { item?.let { city -> onCityClick(city) } },
+            .clickable { onCityClick(item) },
         shape = MaterialTheme.shapes.medium,
         elevation = 5.dp,
         backgroundColor = MaterialTheme.colors.secondary
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(imageVector = Icons.Filled.Place, contentDescription = null)
-            Text(text = "${item.name}")
+            Icon(imageVector = Icons.Filled.Place, contentDescription = null, modifier = Modifier.padding(start = 4.dp))
+            Text(text = "${item.name}", modifier = Modifier.padding(end = 8.dp))
         }
     }
 }

@@ -5,7 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -13,16 +13,16 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -33,25 +33,32 @@ import com.example.myappartment.data.UserData
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.ImageComposable
 import com.example.myappartment.main.common.ProgressSpinner
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.main.common.UserImageCard
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 val showSideSettings = mutableStateOf(false)
 
 @Composable
-fun SinglePostScreen(navController: NavController, vm: AppViewModule, post: PostData) {
+fun SinglePostScreen(navController: NavController, vm: UserViewModel, postVm: PostViewModel, post: PostData) {
     val userData = vm.getUserDataById.value
     val userDataLoading = vm.getUserDataByIdLoading.value
+    post.postId?.let { postVm.getPostById(it) }
+
+    val getPost = postVm.post
+
     if (userDataLoading)
         ProgressSpinner()
-    post.userId?.let {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(8.dp)
-        ) {
+    post.let {
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .wrapContentHeight()
+//                .padding(8.dp)
+//        )
+        Column {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -63,7 +70,8 @@ fun SinglePostScreen(navController: NavController, vm: AppViewModule, post: Post
                 Text(text = "Back", fontWeight = FontWeight.Bold, modifier = Modifier
                     .padding(8.dp)
                     .clickable { navController.popBackStack() })
-                if (post.userId == vm.userData.value?.userId) {
+
+                if (getPost.value?.userId == vm.userData.value?.userId) {
                     IconButton(onClick = {
                         showSideSettings.value = true
                     }) {
@@ -72,27 +80,34 @@ fun SinglePostScreen(navController: NavController, vm: AppViewModule, post: Post
                 }
             }
             LineDivider()
-            SinglePostDisplay(navController = navController, vm = vm, post = post, user = userData)
+            getPost.value?.let { it1 ->
+                SinglePostDisplay(
+                    navController = navController,
+                    vm = vm,
+                    post = it1,
+                    user = userData
+                )
+            }
         }
         if (showSideSettings.value) {
-            SideSettingsDropdown(navController, vm, post)
+            SideSettingsDropdown(navController, vm, postVm, post)
         }
     }
+
 }
 
 @SuppressLint("SimpleDateFormat")
 @Composable
 fun SinglePostDisplay(
     navController: NavController,
-    vm: AppViewModule,
+    vm: UserViewModel,
     post: PostData,
     user: UserData?
 ) {
-    val userData = vm.userData.value
     val date = post.time?.let { Date(it) }
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm").format(date)
 
-    Column(modifier = Modifier.fillMaxHeight()) {
+    Column {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -102,26 +117,24 @@ fun SinglePostDisplay(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Card(
-                    shape = CircleShape, modifier = Modifier
-                        .padding(8.dp)
-                        .size(32.dp)
-                ) {
-                    ImageComposable(data = user?.imageUrl)
-                }
-                Text(text = user?.username ?: "")
+                UserImageCard(userImage = user?.imageUrl, modifier = Modifier
+                    .size(32.dp)
+                    .padding(start = 8.dp))
+                Text(text = user?.username ?: "", Modifier.padding(start = 8.dp))
             }
         }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp), contentAlignment = Alignment.Center
+                .wrapContentHeight()
+                .padding(bottom = 10.dp, start = 8.dp),
+            contentAlignment = Alignment.CenterStart
         ) {
             Text(
                 text = post.title ?: "",
                 fontWeight = FontWeight.Bold,
                 fontSize = 30.sp,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Start,
             )
         }
         Box(
@@ -139,6 +152,9 @@ fun SinglePostDisplay(
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .size(220.dp)
+                            .clip(
+                                RoundedCornerShape(percent = 10)
+                            )
                             .clickable {
                                 navController.currentBackStackEntry?.savedStateHandle?.set(
                                     key = "imageUrl",
@@ -162,15 +178,12 @@ fun SinglePostDisplay(
                     )
                 }
                 Column(modifier = Modifier.padding(15.dp)) {
-                    var roomsString = "rooms"
-                    val superscript =
-                        SpanStyle(baselineShift = BaselineShift.Superscript, fontSize = 10.sp)
-                    if (post.rooms != null && post.rooms == 1) {
-                        roomsString = "room"
-                    }
+                    val resources = LocalContext.current.resources
+                    val rooms = post.rooms!!
+
                     Text(
                         modifier = Modifier.padding(bottom = 8.dp),
-                        text = if (post.rooms == null) "" else "${post.rooms} $roomsString"
+                        text = resources.getQuantityString(R.plurals.rooms_format, rooms, rooms)
                     )
                     Text(
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -178,10 +191,16 @@ fun SinglePostDisplay(
                             if (post.squareFootage == null) {
                                 append("")
                             } else {
-                                append("${post.squareFootage} m")
-                                withStyle(superscript) {
-                                    append("2")
-                                }
+                                append(
+                                    stringResource(
+                                        R.string.squareMeter,
+                                        "${post.squareFootage}"
+                                    )
+                                )
+//                                append("${post.squareFootage} m")
+//                                withStyle(superscript) {
+//                                    append("2")
+//                                }
                             }
                         }
                     )
@@ -200,24 +219,10 @@ fun SinglePostDisplay(
                 .padding(8.dp)
         ) {
             Text(
-                text = if (post.description == null) "" else "${post.description}",
+                text = if (post.description == null) "" else "${post.description} ${user?.userId} ${post.userId}",
                 textAlign = TextAlign.Justify
             )
         }
-
-
-//    Row(modifier = Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-//        Image(
-//            painter = painterResource(id = R.drawable.ic_fav),
-//            contentDescription = null,
-//            modifier = Modifier.size(24.dp),
-//            colorFilter = ColorFilter.tint(Color.Red)
-//        )
-//        Text(
-//            text = "${post.likes?.size ?: 0} saved this post as favorite",
-//            modifier = Modifier.padding(start = 2.dp)
-//        )
-//    }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -227,14 +232,44 @@ fun SinglePostDisplay(
             Text(text = "Created on: $dateFormat", modifier = Modifier.padding(top = 8.dp))
         }
 
+        val userId1 = user?.userId?.toString()?.trim()
+        val userId2 = post.userId?.toString()?.trim()
+
+        if (userId1 != null && userId2 != null && userId1 != userId2) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        navController.currentBackStackEntry?.savedStateHandle?.set("userId", post.userId)
+                        navController.navigate(DestinationScreen.Chat.route)
+                    },
+                    modifier = Modifier
+                        .width(150.dp),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 0.dp,
+                        pressedElevation = 0.dp,
+                        disabledElevation = 0.dp
+                    ),
+                    shape = RoundedCornerShape(10)
+                )
+                {
+                    Text(text = stringResource(R.string.openChat), color = MaterialTheme.colors.onSecondary)
+                }
+            }
+        }
+
     }
 }
 
 @Composable
-fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: PostData) {
+fun SideSettingsDropdown(navController: NavController, vm: UserViewModel, postVm: PostViewModel, post: PostData) {
     val items = listOf(
-        "Delete",
-        "Edit"
+        stringResource(R.string.delete),
+        stringResource(R.string.edit)
     )
     Column(
         modifier = Modifier
@@ -256,7 +291,7 @@ fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: 
                     showSideSettings.value = false
                     if (s == "Delete") {
                         navController.popBackStack()
-                        vm.deletePost(post)
+                        postVm.deletePost(post)
                     } else if (s == "Edit") {
                         navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
                         navController.navigate(DestinationScreen.EditPost.route)
@@ -269,8 +304,6 @@ fun SideSettingsDropdown(navController: NavController, vm: AppViewModule, post: 
                 }
             }
         }
-
-
     }
 }
 

@@ -8,10 +8,11 @@ import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
 import com.example.myappartment.data.CityData
 import com.example.myappartment.main.screens.FilterByCityScreen
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 
 
-fun NavGraphBuilder.filterNavGraph(navController: NavHostController, vm: AppViewModule) {
+fun NavGraphBuilder.filterNavGraph(navController: NavHostController, vm: UserViewModel, postVm: PostViewModel) {
     navigation(
         route = Graph.FILTER,
         startDestination = DestinationScreen.CityFilter.route
@@ -20,7 +21,7 @@ fun NavGraphBuilder.filterNavGraph(navController: NavHostController, vm: AppView
             val cityData =
                 navController.previousBackStackEntry?.savedStateHandle?.get<CityData>("city")
             cityData?.let {
-                FilterByCityScreen(navController = navController, vm = vm, city = cityData)
+                FilterByCityScreen(navController = navController, vm = vm, city = cityData, postVm = postVm)
             }
         }
     }

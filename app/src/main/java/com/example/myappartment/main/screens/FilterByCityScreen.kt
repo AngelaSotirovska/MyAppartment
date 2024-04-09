@@ -9,35 +9,26 @@ import androidx.compose.material.icons.filled.Place
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
-import com.example.myappartment.NavParam
 import com.example.myappartment.data.CityData
 import com.example.myappartment.main.common.LineDivider
 import com.example.myappartment.main.common.PostList
-import com.example.myappartment.navigateTo
-import com.example.myappartment.viewModel.AppViewModule
-import com.google.android.gms.maps.model.CameraPosition
-import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
-import com.google.maps.android.compose.MarkerState
-import com.google.maps.android.compose.rememberCameraPositionState
+import com.example.myappartment.viewModel.UserViewModel
+import com.example.myappartment.R
+import com.example.myappartment.viewModel.PostViewModel
 
 @Composable
-fun FilterByCityScreen(navController: NavController, vm: AppViewModule, city: CityData) {
+fun FilterByCityScreen(navController: NavController, vm: UserViewModel, city: CityData, postVm: PostViewModel) {
 
     city.let {
-        val cityPosition = LatLng(41.9981, 21.4254)
-        val cameraPositionState = rememberCameraPositionState {
-            position = CameraPosition.fromLatLngZoom(cityPosition, 10f)
-        }
-        val filterPosts = vm.filterPosts.value
-        val filterPostsLoading = vm.filterPostsLoading.value
+
+        val filterPosts = postVm.filterPosts.value
+        val filterPostsLoading = postVm.filterPostsLoading.value
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -78,7 +69,7 @@ fun FilterByCityScreen(navController: NavController, vm: AppViewModule, city: Ci
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                noPostsMessage = "No available posts for ${city.name}"
+                noPostsMessage = stringResource(R.string.noPostsAvailableForCity, "${city.name}")
             ) { post ->
                 vm.getUserById(post.userId)
 //                navigateTo(
@@ -89,16 +80,7 @@ fun FilterByCityScreen(navController: NavController, vm: AppViewModule, city: Ci
                 navController.currentBackStackEntry?.savedStateHandle?.set("post", post)
                 navController.navigate(Graph.DETAILS)
             }
-//            GoogleMap(
-//                modifier = Modifier.fillMaxSize(),
-//                cameraPositionState = cameraPositionState
-//            ) {
-//                Marker(
-//                    state = MarkerState(position = cityPosition),
-//                    title = "Skopje",
-//                    snippet = "Marker in Skopje"
-//                )
-//            }
+
         }
     }
 

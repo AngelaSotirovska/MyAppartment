@@ -6,27 +6,36 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myappartment.*
+import com.example.myappartment.R
 import com.example.myappartment.main.common.*
-import com.example.myappartment.ui.theme.LightPink
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.PostViewModel
+import com.example.myappartment.viewModel.UserViewModel
 
 
 @Composable
-fun ProfileScreen(navController: NavController, vm: AppViewModule) {
+fun ProfileScreen(navController: NavController, vm: UserViewModel, postVm: PostViewModel) {
 
     val userData = vm.userData.value
     val isLoading = vm.inProgress.value
-    val postsLoading = vm.refreshPostsProgress.value
-    val posts = vm.posts.value
+    var postsLoading = postVm.refreshPostsProgress.value
+    var posts = postVm.posts.value
+
+    LaunchedEffect(vm.userData.value, postVm.posts.value) {
+        // Trigger actions when userData or posts change
+        postsLoading = postVm.refreshPostsProgress.value
+        posts = postVm.posts.value
+    }
 
     Column {
         Column(modifier = Modifier.weight(1f)) {
@@ -39,7 +48,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
             ) {
                 ProfileImage(userData?.imageUrl) {}
                 Text(
-                    text = "${posts.size} posts",
+                    text = if (posts.size==1) "${posts.size} post" else "${posts.size} posts",
                     textAlign = TextAlign.Center
                 )
                 val usernameDisplay =
@@ -70,7 +79,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                     shape = RoundedCornerShape(10)
                 )
                 {
-                    Text(text = "Edit Profile", color = MaterialTheme.colors.onSecondary)
+                    Text(text = stringResource(R.string.editProfile), color = MaterialTheme.colors.onSecondary)
                 }
             }
             PostList(
@@ -82,7 +91,7 @@ fun ProfileScreen(navController: NavController, vm: AppViewModule) {
                     .weight(1f)
                     .padding(1.dp)
                     .fillMaxSize(),
-                noPostsMessage = "You haven't posted apartment yet"
+                noPostsMessage = stringResource(R.string.noPostsPosted)
             ) { post ->
                 vm.getUserById(post.userId)
                 navController.currentBackStackEntry?.savedStateHandle?.set("post", post)

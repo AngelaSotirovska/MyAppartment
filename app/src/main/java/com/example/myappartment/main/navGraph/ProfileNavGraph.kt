@@ -7,9 +7,9 @@ import androidx.navigation.navigation
 import com.example.myappartment.DestinationScreen
 import com.example.myappartment.Graph
 import com.example.myappartment.authentication.screens.EditProfileScreen
-import com.example.myappartment.viewModel.AppViewModule
+import com.example.myappartment.viewModel.UserViewModel
 
-fun NavGraphBuilder.profileNavGraph(navController: NavHostController, vm: AppViewModule) {
+fun NavGraphBuilder.profileNavGraph(navController: NavHostController, vm: UserViewModel) {
     navigation(
         route = Graph.PROFILE,
         startDestination = DestinationScreen.EditProfile.route
