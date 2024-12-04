@@ -5,7 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -42,23 +44,27 @@ import java.util.*
 val showSideSettings = mutableStateOf(false)
 
 @Composable
-fun SinglePostScreen(navController: NavController, vm: UserViewModel, postVm: PostViewModel, post: PostData) {
+fun SinglePostScreen(
+    navController: NavController, vm: UserViewModel, postVm: PostViewModel, post: PostData
+) {
     val userData = vm.getUserDataById.value
+    val isCurrentUser = vm.userData.value?.userId != userData?.userId
     val userDataLoading = vm.getUserDataByIdLoading.value
     post.postId?.let { postVm.getPostById(it) }
 
     val getPost = postVm.post
 
-    if (userDataLoading)
-        ProgressSpinner()
+    val scrollState = rememberScrollState()
+
+    if (userDataLoading) ProgressSpinner()
     post.let {
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .wrapContentHeight()
-//                .padding(8.dp)
-//        )
-        Column {
+        Column(
+            modifier = Modifier
+                .verticalScroll(scrollState)
+                .padding(8.dp)
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -67,9 +73,11 @@ fun SinglePostScreen(navController: NavController, vm: UserViewModel, postVm: Po
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Back", fontWeight = FontWeight.Bold, modifier = Modifier
-                    .padding(8.dp)
-                    .clickable { navController.popBackStack() })
+                Text(text = "Back",
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .clickable { navController.popBackStack() })
 
                 if (getPost.value?.userId == vm.userData.value?.userId) {
                     IconButton(onClick = {
@@ -85,15 +93,15 @@ fun SinglePostScreen(navController: NavController, vm: UserViewModel, postVm: Po
                     navController = navController,
                     vm = vm,
                     post = it1,
-                    user = userData
+                    user = userData,
+                    isCurrentUser = isCurrentUser
                 )
             }
         }
         if (showSideSettings.value) {
-            SideSettingsDropdown(navController, vm, postVm, post)
+            SideSettingsDropdown(navController, postVm, post)
         }
     }
-
 }
 
 @SuppressLint("SimpleDateFormat")
@@ -102,7 +110,8 @@ fun SinglePostDisplay(
     navController: NavController,
     vm: UserViewModel,
     post: PostData,
-    user: UserData?
+    user: UserData?,
+    isCurrentUser: Boolean?
 ) {
     val date = post.time?.let { Date(it) }
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm").format(date)
@@ -114,12 +123,14 @@ fun SinglePostDisplay(
                 .height(48.dp)
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
             ) {
-                UserImageCard(userImage = user?.imageUrl, modifier = Modifier
-                    .size(32.dp)
-                    .padding(start = 8.dp))
+                UserImageCard(
+                    userImage = user?.imageUrl,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .padding(start = 8.dp)
+                )
                 Text(text = user?.username ?: "", Modifier.padding(start = 8.dp))
             }
         }
@@ -127,8 +138,7 @@ fun SinglePostDisplay(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(bottom = 10.dp, start = 8.dp),
-            contentAlignment = Alignment.CenterStart
+                .padding(bottom = 10.dp, start = 8.dp), contentAlignment = Alignment.CenterStart
         ) {
             Text(
                 text = post.title ?: "",
@@ -157,8 +167,7 @@ fun SinglePostDisplay(
                             )
                             .clickable {
                                 navController.currentBackStackEntry?.savedStateHandle?.set(
-                                    key = "imageUrl",
-                                    value = post.postImage
+                                    key = "imageUrl", value = post.postImage
                                 )
                                 navigateTo(
                                     navController = navController,
@@ -185,25 +194,21 @@ fun SinglePostDisplay(
                         modifier = Modifier.padding(bottom = 8.dp),
                         text = resources.getQuantityString(R.plurals.rooms_format, rooms, rooms)
                     )
-                    Text(
-                        modifier = Modifier.padding(bottom = 8.dp),
-                        text = buildAnnotatedString {
-                            if (post.squareFootage == null) {
-                                append("")
-                            } else {
-                                append(
-                                    stringResource(
-                                        R.string.squareMeter,
-                                        "${post.squareFootage}"
-                                    )
+                    Text(modifier = Modifier.padding(bottom = 8.dp), text = buildAnnotatedString {
+                        if (post.squareFootage == null) {
+                            append("")
+                        } else {
+                            append(
+                                stringResource(
+                                    R.string.squareMeter, "${post.squareFootage}"
                                 )
+                            )
 //                                append("${post.squareFootage} m")
 //                                withStyle(superscript) {
 //                                    append("2")
 //                                }
-                            }
                         }
-                    )
+                    })
                     Text(
                         modifier = Modifier.padding(bottom = 8.dp),
                         text = if (post.price == null) "" else "${post.price} euros"
@@ -219,7 +224,7 @@ fun SinglePostDisplay(
                 .padding(8.dp)
         ) {
             Text(
-                text = if (post.description == null) "" else "${post.description} ${user?.userId} ${post.userId}",
+                text = if (post.description == null) "" else "${post.description}",
                 textAlign = TextAlign.Justify
             )
         }
@@ -232,10 +237,7 @@ fun SinglePostDisplay(
             Text(text = "Created on: $dateFormat", modifier = Modifier.padding(top = 8.dp))
         }
 
-        val userId1 = user?.userId?.toString()?.trim()
-        val userId2 = post.userId?.toString()?.trim()
-
-        if (userId1 != null && userId2 != null && userId1 != userId2) {
+        if (isCurrentUser == true) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -243,21 +245,24 @@ fun SinglePostDisplay(
             ) {
                 OutlinedButton(
                     onClick = {
-                        navController.currentBackStackEntry?.savedStateHandle?.set("userId", post.userId)
+                        navController.currentBackStackEntry?.savedStateHandle?.set(
+                            "userId",
+                            post.userId
+                        )
+                        post.userId?.let { vm.getConversationMessages(it) }
                         navController.navigate(DestinationScreen.Chat.route)
                     },
-                    modifier = Modifier
-                        .width(150.dp),
+                    modifier = Modifier.width(150.dp),
                     colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent),
                     elevation = ButtonDefaults.elevation(
-                        defaultElevation = 0.dp,
-                        pressedElevation = 0.dp,
-                        disabledElevation = 0.dp
+                        defaultElevation = 0.dp, pressedElevation = 0.dp, disabledElevation = 0.dp
                     ),
                     shape = RoundedCornerShape(10)
-                )
-                {
-                    Text(text = stringResource(R.string.openChat), color = MaterialTheme.colors.onSecondary)
+                ) {
+                    Text(
+                        text = stringResource(R.string.openChat),
+                        color = MaterialTheme.colors.onSecondary
+                    )
                 }
             }
         }
@@ -266,10 +271,13 @@ fun SinglePostDisplay(
 }
 
 @Composable
-fun SideSettingsDropdown(navController: NavController, vm: UserViewModel, postVm: PostViewModel, post: PostData) {
+fun SideSettingsDropdown(
+    navController: NavController,
+    postVm: PostViewModel,
+    post: PostData
+) {
     val items = listOf(
-        stringResource(R.string.delete),
-        stringResource(R.string.edit)
+        stringResource(R.string.delete), stringResource(R.string.edit)
     )
     Column(
         modifier = Modifier

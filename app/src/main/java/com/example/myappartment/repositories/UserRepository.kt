@@ -1,15 +1,18 @@
 package com.example.myappartment.repositories
 
 import android.net.Uri
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.example.myappartment.Event
 import com.example.myappartment.ThemeState
 import com.example.myappartment.data.Message
+import com.example.myappartment.data.PostData
 import com.example.myappartment.data.UserData
 import com.example.myappartment.repositories.exception.ExceptionHandler
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.ktx.toObject
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
@@ -34,6 +37,7 @@ class UserRepository @Inject constructor(
     val getUserDataById = mutableStateOf<UserData?>(null)
     val getUserDataByIdLoading = mutableStateOf(false)
     val popupNotification = mutableStateOf<Event<String>?>(null)
+    val conversationMessages = mutableStateOf<List<Message>>(listOf())
 
     init {
         auth.signOut()
@@ -234,6 +238,28 @@ class UserRepository @Inject constructor(
                 popupNotification.value =
                     Event(ExceptionHandler.handleException(e, "Cannot send message"))
             }
+    }
+
+    fun getConversationMessages(otherUserId: String) {
+        db.collection("messages")
+            .whereEqualTo("senderId", currentUser?.uid)
+            .whereEqualTo("receiverId", otherUserId).get().addOnSuccessListener { documents ->
+                convertMessages(documents, conversationMessages)
+            }.addOnFailureListener { exc ->
+                popupNotification.value =
+                    Event(ExceptionHandler.handleException(customMessage = "Unable to fetch messages"))
+            }
+
+    }
+
+    private fun convertMessages(documents: QuerySnapshot, messagesState: MutableState<List<Message>>) {
+        val newMessages = mutableListOf<Message>()
+        documents.forEach { doc ->
+            val message = doc.toObject<Message>()
+            newMessages.add(message)
+        }
+        val sortedMessages = newMessages.sortedBy { it.sendDate }
+        messagesState.value = sortedMessages
     }
 
     fun listenForMessages(receiverId: String, onMessageReceived: (Message) -> Unit) {

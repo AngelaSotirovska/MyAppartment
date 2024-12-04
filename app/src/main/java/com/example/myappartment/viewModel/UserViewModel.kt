@@ -2,6 +2,7 @@ package com.example.myappartment.viewModel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import com.example.myappartment.data.Message
 import com.example.myappartment.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,6 +22,7 @@ class UserViewModel @Inject constructor(
     val getUserDataById = userRepository.getUserDataById
     val getUserDataByIdLoading = userRepository.getUserDataByIdLoading
     val popupNotification = userRepository.popupNotification
+    val conversationMessages = userRepository.conversationMessages
 
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
@@ -81,6 +83,18 @@ class UserViewModel @Inject constructor(
     fun getUserById(userId: String?) {
         coroutineScope.launch {
             userRepository.getUserById(userId)
+        }
+    }
+
+    fun sendMessage(message: Message) {
+        coroutineScope.launch {
+            userRepository.sendMessage(message);
+        }
+    }
+
+    fun getConversationMessages(otherUserId: String) {
+        coroutineScope.launch {
+            userRepository.getConversationMessages(otherUserId);
         }
     }
 

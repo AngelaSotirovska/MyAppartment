@@ -28,9 +28,11 @@ import androidx.compose.ui.unit.dp
 import com.example.myappartment.R
 import com.example.myappartment.viewModel.UserViewModel
 import androidx.compose.ui.draw.shadow
+import com.example.myappartment.data.Message
 
 @Composable
-fun MessageItem(msg: String, vm: UserViewModel) {
+fun MessageItem(msg: Message, vm: UserViewModel) {
+    val getSenderName = vm.getUserById(msg.senderId)
     Row(modifier = Modifier.padding(all = 8.dp)) {
         Image(
             painter = painterResource(R.drawable.ic_profile),
@@ -43,7 +45,6 @@ fun MessageItem(msg: String, vm: UserViewModel) {
         Spacer(modifier = Modifier.width(8.dp))
 
         var isExpanded by remember { mutableStateOf(false) }
-        // surfaceColor will be updated gradually from one color to the other
         val surfaceColor by animateColorAsState(
             if (isExpanded) MaterialTheme.colors.primary else MaterialTheme.colors.surface,
         )
@@ -60,14 +61,19 @@ fun MessageItem(msg: String, vm: UserViewModel) {
             Surface(
                 shape = MaterialTheme.shapes.medium,
                 color = surfaceColor,
-                modifier = Modifier.animateContentSize().padding(1.dp).shadow(1.dp, shape = MaterialTheme.shapes.medium)
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(1.dp)
+                    .shadow(1.dp, shape = MaterialTheme.shapes.medium)
             ) {
-                Text(
-                    text = "Lorem ipsum dolor sit amet\n Dolor sit ameeeet",
-                    modifier = Modifier.padding(all = 4.dp),
-                    maxLines = if (isExpanded) Int.MAX_VALUE else 1,
-                    style = MaterialTheme.typography.caption
-                )
+                msg.message?.let {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(all = 4.dp),
+                        maxLines = if (isExpanded) Int.MAX_VALUE else 1,
+                        style = MaterialTheme.typography.caption
+                    )
+                }
             }
         }
     }

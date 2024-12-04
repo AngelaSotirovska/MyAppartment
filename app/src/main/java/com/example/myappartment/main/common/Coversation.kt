@@ -10,14 +10,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.myappartment.data.Message
 import com.example.myappartment.viewModel.UserViewModel
 
 @Composable
-fun Conversation(messages: List<String>, vm: UserViewModel) {
+fun Conversation(messages: List<Message>, vm: UserViewModel) {
     Column {
         messages.forEach { message ->
-            MessageItem(msg = message, vm = vm)
-            Spacer(modifier = Modifier.height(8.dp)) // Add some space between messages
+            message.message?.let { MessageItem(msg = message, vm = vm) }
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
