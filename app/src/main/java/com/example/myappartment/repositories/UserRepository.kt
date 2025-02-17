@@ -6,7 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import com.example.myappartment.Event
 import com.example.myappartment.ThemeState
 import com.example.myappartment.data.Message
-import com.example.myappartment.data.PostData
 import com.example.myappartment.data.UserData
 import com.example.myappartment.repositories.exception.ExceptionHandler
 import com.google.firebase.auth.FirebaseAuth
@@ -234,6 +233,9 @@ class UserRepository @Inject constructor(
     fun sendMessage(message: Message) {
         db.collection("messages")
             .add(message.toMap())
+            .addOnSuccessListener {
+                message.receiverId?.let { it1 -> getConversationMessages(it1) }
+            }
             .addOnFailureListener { e ->
                 popupNotification.value =
                     Event(ExceptionHandler.handleException(e, "Cannot send message"))
@@ -278,5 +280,18 @@ class UserRepository @Inject constructor(
                     }
                 }
             }
+    }
+
+    fun getUser(userId: String, callback: (UserData?) -> Unit) {
+        db.collection(USERS).document(userId).get().addOnSuccessListener {
+            if (it.exists()) {
+                val user = it.toObject<UserData>()
+                callback(user)
+            } else {
+                callback(null)
+            }
+        }.addOnFailureListener {
+            callback(null)
+        }
     }
 }

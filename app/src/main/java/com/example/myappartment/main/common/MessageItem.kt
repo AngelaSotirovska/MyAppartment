@@ -5,9 +5,11 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,6 +19,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,8 +35,21 @@ import com.example.myappartment.data.Message
 
 @Composable
 fun MessageItem(msg: Message, vm: UserViewModel) {
-    val getSenderName = vm.getUserById(msg.senderId)
-    Row(modifier = Modifier.padding(all = 8.dp)) {
+    var userMessage = vm.userData.value
+    var showRight = false
+    LaunchedEffect(msg.senderId) {
+        msg.senderId?.let {
+            vm.getUser(it) { user ->
+                if (user != null) {
+                    userMessage = user
+                    if(user.userId !== vm.userData.value?.userId) {
+                        showRight = true
+                    }
+                }
+            }
+        }
+    }
+    Row(modifier = Modifier.fillMaxWidth().padding(all = 8.dp), horizontalArrangement = if (showRight) Arrangement.End else Arrangement.Start) {
         Image(
             painter = painterResource(R.drawable.ic_profile),
             contentDescription = null,
@@ -50,11 +66,13 @@ fun MessageItem(msg: Message, vm: UserViewModel) {
         )
 
         Column(modifier = Modifier.clickable { isExpanded = !isExpanded }) {
-            Text(
-                text = "Author",
-                color = MaterialTheme.colors.secondary,
-                style = MaterialTheme.typography.caption
-            )
+            userMessage?.name?.let {
+                Text(
+                    text = it,
+                    color = MaterialTheme.colors.secondary,
+                    style = MaterialTheme.typography.caption
+                )
+            }
 
             Spacer(modifier = Modifier.height(4.dp))
 

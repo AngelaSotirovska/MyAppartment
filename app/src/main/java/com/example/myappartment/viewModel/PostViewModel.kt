@@ -2,12 +2,11 @@ package com.example.myappartment.viewModel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myappartment.data.PostData
 import com.example.myappartment.repositories.PostRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,8 +15,6 @@ import javax.inject.Inject
 class PostViewModel @Inject constructor(
     private val postRepository: PostRepository
 ) : ViewModel() {
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
-
     val popupNotification = postRepository.popupNotification
     val posts = postRepository.posts
     val refreshPostsProgress = postRepository.refreshPostsProgress
@@ -34,25 +31,25 @@ class PostViewModel @Inject constructor(
     val post = postRepository.post
 
     fun getPostById(postId: String) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.getPostById(postId)
         }
     }
 
     fun deletePost(post: PostData) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.deletePost(post)
         }
     }
 
     fun searchPosts(searchTerm: String) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.searchPosts(searchTerm)
         }
     }
 
     fun getPostsByCity(cityId: String?) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.getPostsByCity(cityId)
         }
     }
@@ -68,7 +65,7 @@ class PostViewModel @Inject constructor(
         city: String,
         onPostSuccess: () -> Unit
     ) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.onNewPost(
                 imageUri,
                 title,
@@ -95,7 +92,7 @@ class PostViewModel @Inject constructor(
         city: String,
         onPostSuccess: () -> Unit
     ) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             postRepository.onEditPost(
                 postId,
                 imageUri,
@@ -109,10 +106,5 @@ class PostViewModel @Inject constructor(
                 onPostSuccess
             )
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        coroutineScope.coroutineContext.cancelChildren()
     }
 }

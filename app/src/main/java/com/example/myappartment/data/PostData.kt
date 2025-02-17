@@ -2,7 +2,9 @@ package com.example.myappartment.data
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.firebase.firestore.IgnoreExtraProperties
 
+@IgnoreExtraProperties
 data class PostData(
     val postId: String? = null,
     val userId: String? = null,

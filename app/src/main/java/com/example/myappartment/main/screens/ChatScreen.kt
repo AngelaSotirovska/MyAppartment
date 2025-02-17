@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,7 +46,9 @@ import com.example.myappartment.viewModel.UserViewModel
 fun ChatScreen(navController: NavController, vm: UserViewModel, otherUserId: String) {
     val scrollState = rememberScrollState()
     var message by remember { mutableStateOf(TextFieldValue("")) }
-    val messages = vm.conversationMessages.value
+//    val messages = vm.conversationMessages.value
+    val messages by remember { derivedStateOf { vm.conversationMessages } }
+    val test by vm.conversationMessages
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -72,7 +75,7 @@ fun ChatScreen(navController: NavController, vm: UserViewModel, otherUserId: Str
                     modifier = Modifier.clickable { navController.popBackStack() })
             }
             LineDivider()
-            Conversation(messages = messages, vm = vm)
+            Conversation(messages = test, vm = vm)
             Spacer(modifier = Modifier.weight(1f))
         }
 
@@ -115,6 +118,7 @@ fun ChatScreen(navController: NavController, vm: UserViewModel, otherUserId: Str
                     println("Message Sent: ${message.text}")
                     vm.sendMessage(Message(message.text, vm.userData.value?.userId, otherUserId, System.currentTimeMillis()))
                     message = TextFieldValue("")
+                    messages.value = messages.value
                 },
                 enabled = message.text.isNotBlank()
             ) {

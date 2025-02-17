@@ -52,7 +52,9 @@ fun SinglePostScreen(
     val userDataLoading = vm.getUserDataByIdLoading.value
     post.postId?.let { postVm.getPostById(it) }
 
-    val getPost = postVm.post
+    val getPost by remember { derivedStateOf { postVm.post } }
+
+//    val getPost = postVm.post
 
     val scrollState = rememberScrollState()
 

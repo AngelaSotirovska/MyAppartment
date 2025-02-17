@@ -2,7 +2,9 @@ package com.example.myappartment.viewModel
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myappartment.data.Message
+import com.example.myappartment.data.UserData
 import com.example.myappartment.repositories.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -24,8 +26,6 @@ class UserViewModel @Inject constructor(
     val popupNotification = userRepository.popupNotification
     val conversationMessages = userRepository.conversationMessages
 
-    private val coroutineScope = CoroutineScope(Dispatchers.Main)
-
 
     init {
 //        userRepository.logOut()
@@ -36,13 +36,13 @@ class UserViewModel @Inject constructor(
     }
 
     fun onSignup(username: String, email: String, password: String) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.onSignup(username, email, password)
         }
     }
 
     fun onLogin(email: String, password: String) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.onLogin(email, password)
         }
     }
@@ -50,13 +50,13 @@ class UserViewModel @Inject constructor(
     fun updateProfileData(
         name: String, username: String, lastName: String, contactInformation: String
     ) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.createOrUpdateProfile(name, username, lastName, contactInformation)
         }
     }
 
     fun uploadImage(uri: Uri, onSuccess: (Uri) -> Unit) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.uploadImage(uri, onSuccess)
         }
     }
@@ -68,38 +68,39 @@ class UserViewModel @Inject constructor(
     }
 
     fun changeMode(darkMode: Boolean) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.changeMode(darkMode)
         }
     }
 
 
     fun logOut() {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.logOut()
         }
     }
 
     fun getUserById(userId: String?) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.getUserById(userId)
         }
     }
 
     fun sendMessage(message: Message) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.sendMessage(message);
         }
     }
 
     fun getConversationMessages(otherUserId: String) {
-        coroutineScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             userRepository.getConversationMessages(otherUserId);
         }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        coroutineScope.coroutineContext.cancelChildren()
+    fun getUser(id: String, callback: (UserData?) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            userRepository.getUser(id, callback)
+        }
     }
 }
